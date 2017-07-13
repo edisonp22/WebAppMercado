@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>        
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="theme-color" content="#{guestPreferences.themeColors[guestPreferences.theme]}"/>
+        </f:facet>
+        <title>#{AtributosVistas.titulo}</title>
+        <link href="../resources/css/estilos-menus.css" rel="stylesheet" type="text/css"/>                
+        <h:outputScript name="js/nanoscroller.js" library="ultima-layout" />
+        <h:outputScript name="js/layout.js" library="ultima-layout" />
+        <h:outputScript name="js/ripple.js" library="ultima-layout" />
+        <h:outputScript name="js/swipe.js" library="ultima-layout" />        
+        <ui:insert name="head"/>
+    </h:head>
+    <h:body styleClass="main-body #{guestPreferences.compact ? 'layout-compact' : null}" style="background-color: #fff;" onload="nobackbutton();">
+        <p:growl autoUpdate="true" showDetail="true"/>
+        <center>
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <h:form id="frmAcciones">
+                        <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />                        
+                        <p:panel header="Gestión de URLS">
+                            <p:dataTable id="tblAcciones" var="accion" value="#{accionCtrl.lstAcciones}" rows="4"
+                                         paginator="true"  emptyMessage="No se han encontrado registros" 
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="5,10,15" reflow="true"
+                                         rowKey="#{accion.idAccion}" selectionMode="single" selection="#{accionCtrl.accionSel}">
+
+                                <p:column headerText="Id" width="5%" style="text-align: center">
+                                    <h:outputText value="#{accion.idAccion}" />
+                                </p:column>
+
+                                <p:column headerText="Titulo" width="15%" style="text-align: center">
+                                    <h:outputText value="#{accion.titulo}" />
+                                </p:column>
+
+                                <p:column headerText="URL">
+                                    <h:outputText value="#{accion.url}" />
+                                </p:column>
+
+                                <p:column headerText="Descripción">
+                                    <h:outputText value="#{accion.descripcion}" />
+                                </p:column>
+
+                                <p:column headerText="Estado" width="8%" style="text-align: center">
+                                    <h:outputText value="#{accion.estadoLogico=='A' ?'ACTIVO':'INACTIVO'}" />                                
+                                </p:column>
+
+                                <p:column headerText="Fecha de Registro" width="8%" style="text-align: center">
+                                    <h:outputText value="#{accion.fechaRegistro}" >
+                                        <f:convertDateTime type="date" pattern="dd-MMM-YYYY" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Operaciones" width="8%" style="text-align: center">
+                                    <p:commandButton icon="ui-icon-pencil" onclick="PF('dlgActualizar').show();"
+                                                     title="Editar URL" update="frmActualizarAccion">    
+                                        <f:setPropertyActionListener value="#{accion}" 
+                                                                     target="#{accionCtrl.accionSel}"/>
+                                    </p:commandButton>                              
+                                    <p:commandButton icon="ui-icon-trash" onclick="PF('dlgEliminar').show();"
+                                                     title="Editar URL" update="frmEliminarAccion">
+                                        <f:setPropertyActionListener value="#{accion}" 
+                                                                     target="#{accionCtrl.accionSel}"/>      
+                                    </p:commandButton>
+
+                                </p:column>
+
+                                <f:facet name="footer">
+                                    <p:commandButton value="Registrar" icon="ui-icon-plusthick" title="Registrar una acción"
+                                                     type="button" onclick="PF('dlgRegistrar').show();" />
+                                </f:facet>
+
+                            </p:dataTable>
+
+                        </p:panel>
+                    </h:form>
+
+                    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="true" header="Procesando">
+                        <img src="../../resources/gifs/Loading.gif" alt=""/>                        
+                    </p:dialog>
+
+                    <p:dialog header="Registrar URL" widgetVar="dlgRegistrar" modal="true" closable="false" resizable="false"
+                              showEffect="clip" hideEffect="fold">
+                        <h:form id="frmRegistrarAccion">
+                            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+                            <h:panelGrid columns="2">
+                                <p:outputLabel value="Titulo:"/>
+                                <p:inputText value="#{accionCtrl.accion.titulo}" required="true" requiredMessage="El Título es un campo obligatorio"/>
+                                <p:outputLabel value="URL:"/>
+                                <p:inputText value="#{accionCtrl.accion.url}" required="true" requiredMessage="La URL es un campo obligatorio"/>
+                                <p:outputLabel value="Descripción:"/>
+                                <p:inputTextarea value="#{accionCtrl.accion.descripcion}" required="true" requiredMessage="La Descripcion es un campo obligatorio"/>
+                            </h:panelGrid>
+                            <p:separator/>
+                            <center>
+                                <p:commandButton value="Aceptar" action="#{accionCtrl.registrar()}" update="frmAcciones:tblAcciones,frmRegistrarAccion"/>
+                                <p:commandButton value="Cancelar" type="button" onclick="PF('dlgRegistrar').hide();"/> 
+                            </center>   
+
+                        </h:form>                        
+                    </p:dialog>
+
+
+                    <p:dialog header="Actualizar URL" widgetVar="dlgActualizar" modal="true" closable="false" resizable="false"
+                              showEffect="clip" hideEffect="fold" >
+                        <h:form id="frmActualizarAccion">
+                            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+                            <h:panelGrid columns="2">
+                                <p:outputLabel value="Titulo:"/>
+                                <p:inputText value="#{accionCtrl.accionSel.titulo}" required="true" requiredMessage="El Título es un campo obligatorio"
+                                             style="width:250px"/>
+                                <p:outputLabel value="URL:"/>
+                                <p:inputText value="#{accionCtrl.accionSel.url}" required="true" requiredMessage="La URL es un campo obligatorio"
+                                             style="width:250px"/>
+                                <p:outputLabel value="Descripción:"/>
+                                <p:inputTextarea value="#{accionCtrl.accionSel.descripcion}" required="true" requiredMessage="La Descripcion es un campo obligatorio"
+                                                 style="width:250px"/>
+                            </h:panelGrid>
+                            <p:separator/>
+                            <center>
+                                <p:commandButton value="Aceptar" action="#{accionCtrl.actualizar()}" update="frmAcciones:tblAcciones,frmActualizarAccion"/>
+                                <p:commandButton value="Cancelar" type="button" onclick="PF('dlgActualizar').hide();"/> 
+                            </center>   
+                        </h:form>  
+                    </p:dialog>
+
+                    <p:dialog header="Basic Dialog" widgetVar="dlgEliminar" modal="true" closable="false" resizable="false"
+                              showEffect="clip" hideEffect="fold">
+                        <h:form id="frmEliminarAccion">
+                            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+                            <p:panel>
+                                <h3>¿Está seguro que desea eliminar esta URL?</h3>  
+                                <center>
+                                    <h:panelGrid columns="1">
+                                        <p:outputLabel value="#{accionCtrl.accionSel.titulo}"/>                                
+                                        <p:outputLabel value="URL: #{accionCtrl.accionSel.url}"/> 
+                                    </h:panelGrid>
+                                    <p:separator/>
+                                    <p:commandButton value="Aceptar" action="#{accionCtrl.eliminar()}" update="frmAcciones:tblAcciones,frmEliminarAccion"/>
+                                    <p:commandButton value="Cancelar" type="button" onclick="PF('dlgEliminar').hide();"/> 
+                                </center>
+                            </p:panel>
+                        </h:form>
+                    </p:dialog>
+
+                </div>                
+
+            </div>           
+
+        </center>
+
+        <h:outputStylesheet name="css/nanoscroller.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/animate.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/ripple.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/layout-blue-grey.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/styles.css" library="resources" />
+    </h:body>
+</html>
+

@@ -1,0 +1,104 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pu="http://primefaces.org/ultima">
+
+    <div class="topbar clearfix">
+
+
+        <div class="topbar-right">
+            <!--a id="menu-button" href="#">
+                <i></i>
+            </a-->
+
+            <a id="topbar-menu-button" href="#">
+                <i class="material-icons">menu</i>
+            </a>
+
+            <ul class="topbar-items fadeInDown animated">
+                <ui:fragment>
+                    <li class="profile-item">
+                        <li class="search-item">
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText />
+                                <label>Buscar</label>
+                                <i class="topbar-icon material-icons">&#xE8B6;</i>
+                            </h:panelGroup>
+
+                        </li>
+                        <li>
+                            <!--<p:button value="Registrate" href="faces/vNuevoRegistro.xhtml" styleClass="amber-btn flat"/>-->
+                            <p:commandButton value="Registrate"
+                                                     onclick="PF('dlgRegistrar').show();" 
+                                                     update="frmRegistro" styleClass="amber-btn flat"/>
+                        </li>
+                        <li>
+                            
+                            <p:button value="Iniciar Sesión" href="faces/login.xhtml" styleClass="amber-btn flat"/>
+                        </li>
+                    </li>
+                </ui:fragment>   
+            </ul>            
+        </div>
+    </div>
+    
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="true" header="Procesando">                        
+                        <img src="../../resources/gifs/Loading.gif" alt=""/>
+                    </p:dialog>
+
+                    <p:dialog header="Registro de Usuario" widgetVar="dlgRegistrar" modal="true" closable="false" resizable="false"
+                              showEffect="clip" hideEffect="fold" width="75%">
+                        <h:form id="frmRegistro">                            
+                            <div class="ui-g-12">                                                                   
+                                <p:panel >                                    
+                                    <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                        <h:panelGroup styleClass="md-inputfield">
+                                            <p:inputText value="" required="true" 
+                                                         requiredMessage="Se necesita el nombres del Uusario."
+                                                         style="width: 100%"/>
+                                            <label>Nombres</label>
+                                        </h:panelGroup>
+                                        <h:panelGroup styleClass="md-inputfield">
+                                            <p:inputText value="" required="true" 
+                                                         requiredMessage="Se necesita los apellidos del usuario."
+                                                         style="width: 100%"/>         
+                                            <label>Apellidos</label>
+                                        </h:panelGroup>
+                                        <h:panelGroup styleClass="md-inputfield">
+                                            <p:inputText value="" required="true" 
+                                                         requiredMessage="Se necesita la cedula de identidad."
+                                                         style="width: 100%"/>         
+                                            <label>C.I.</label>
+                                        </h:panelGroup>       
+                                        <h:panelGroup styleClass="md-inputfield">
+                                            <p:inputText value="" required="true" 
+                                                         requiredMessage="Se necesita la dirección del usuario."
+                                                         style="width: 100%"/>         
+                                            <label>Dirección</label>
+                                        </h:panelGroup>  
+                                        
+                                    </p:panelGrid>    
+                                </p:panel>
+                                    
+                                    <!--<p:column headerText="Registar Usuario"  width="8%" style="text-align: center">
+                                        <p:commandButton icon="ui-icon-notice" onclick="PF('dlgRegPiso').show();" 
+                                                         process="@this" update="frmRegistrarPriso">
+                                            <f:setPropertyActionListener value="#{bloque}" target="#{predioCtrl.bloqueSel}"/>
+                                        </p:commandButton>
+                                    </p:column>-->
+                                    
+                                    <p:commandButton value="Guardar" process="@this">
+                                                     
+                                </p:commandButton>
+                                <p:commandButton value="Salir" onclick="PF('dlgRegistrar').hide();"
+                                                 icon="ui-icon-close" process="@this"/>
+                            </div>                            
+
+                        </h:form>
+                    </p:dialog>
+
+
+</ui:composition>

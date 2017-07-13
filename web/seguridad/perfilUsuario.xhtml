@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="theme-color" content="#{guestPreferences.themeColors[guestPreferences.theme]}"/>
+        </f:facet>
+        <title>#{AtributosVistas.titulo}</title>      
+        <h:outputScript name="js/nanoscroller.js" library="ultima-layout" />
+        <h:outputScript name="js/layout.js" library="ultima-layout" />
+        <h:outputScript name="js/ripple.js" library="ultima-layout" />
+        <h:outputScript name="js/swipe.js" library="ultima-layout" />                              
+    </h:head>
+    <h:body>
+        <p:growl autoUpdate="true" showDetail="true"/>
+        <h:form id="frmPerfilUsuario">
+            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />     
+            <p:panel id="pnlUsuario"  style="text-align: center" >
+                <center>
+                    <div class="ui-g">
+                        <div class="ui-g-12">                    
+                            <h3>Perfil</h3>
+                           <!--<span class="overview-detail">#{sessionScope.nombre}</span>-->
+                            <h:panelGrid columns="2">
+                                <h:graphicImage id="fotoUsuario" value="#{sessionScope.foto}"/>                           
+                                <h:panelGrid columns="3">
+                                    <pre>      </pre>
+                                    <!--<h:outputLabel value="   "/>-->
+                                    <p:commandButton icon="ui-icon-person" />
+                                    <h:outputLabel value="#{sessionScope.usLogueado.nombres} #{sessionScope.usLogueado.apellidos}" />
+                                    <h:outputLabel value="   "/>
+                                    <p:commandButton icon="ui-btn ui-corner-all ui-icon-mail ui-btn-icon-notext" />
+                                    <h:outputLabel value="#{sessionScope.usLogueado.mail}"/>
+                                    <h:outputLabel value="   "/>
+                                    <p:commandButton icon="ui-btn ui-corner-all ui-icon-phone ui-btn-icon-notext" />
+                                    <h:outputLabel value="#{sessionScope.usLogueado.celular}"/>
+                                    <h:outputLabel value="   "/>
+                                    <p:commandButton icon="ui-btn ui-corner-all ui-icon-navigation ui-btn-icon-notext" />
+                                    <h:outputLabel value="#{sessionScope.usLogueado.direccionDom}"/>
+
+
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:commandButton icon="ui-btn ui-corner-all ui-icon-camera ui-btn-icon-notext" value="CAMBIAR IMAGEN" 
+                                                 onclick="PF('dlgActualizarImagen').show();"
+                                                 update="frmInsertarImagen">
+
+                                </p:commandButton>
+
+                                <h:panelGrid columns="1">
+                                    <p:commandButton icon="ui-btn ui-corner-all ui-icon-edit ui-btn-icon-notext" value="ACTUALIZAR PERFIL" 
+                                                     onclick="PF('dlgActualizar').show();"
+                                        update="frmActualizar">
+                                                         
+                                    </p:commandButton>
+
+
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </div>
+                    </div>
+                </center>
+            </p:panel>
+        </h:form>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="true" header="Procesando">                        
+            <img src="../../resources/gifs/Loading.gif" alt=""/>
+        </p:dialog>
+
+        <p:dialog header="Cambiar Imagen" widgetVar="dlgActualizarImagen" modal="true" closable="false" resizable="false"
+                  showEffect="clip" hideEffect="fold">
+
+            <h:form id="frmInsertarImagen" enctype="multipart/form-data">
+                <p:panel id="displayInsertarImagen" >
+
+                    <p:outputLabel value="Previzualización"/>
+                    <p:graphicImage id="griPrevisualizar" value="#{sessionScope.foto}" 
+                                    height="80"/>
+
+                    <p:panelGrid id="pngSubirArchivo" columns="2" style="width: 510px;">
+                        <p:fileUpload fileUploadListener="#{loginCtrl.cargarArchivoImagen}"
+                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/" label="Abrir" mode="advanced"  
+                                      uploadLabel="Subir" cancelLabel="Cancelar"   
+                                      value="#{loginCtrl.archivoImagen}"
+                                      required="true" requiredMessage="Cargar la imagen!!" 
+                                      update="displayInsertarImagen griPrevisualizar"   />
+
+                    </p:panelGrid>
+                    <p:inputText id="foto" value="#{loginCtrl.foto}" maxlength="10"   >
+
+                    </p:inputText> 
+
+                    <p:panelGrid columns="2" style="text-align: center;">
+                        <p:commandButton value="Aceptar" actionListener="#{loginCtrl.insertarImagen()}" 
+                                         update=":frmPerfilUsuario:pnlUsuario" process="@this,foto"  
+                                         />
+                        <p:commandButton value="Cancelar" onclick="PF('dlgActualizarImagen').hide();"/>
+
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+
+        </p:dialog>
+        
+        <p:dialog header="Actualizar Perfil" widgetVar="dlgActualizar" modal="true" closable="false" resizable="false"
+                              showEffect="clip" hideEffect="fold" >
+                        <h:form id="frmActualizar">
+                            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />     
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Cedula:"/>
+                                <p:inputText value="${loginCtrl.cedula}" maxlength="10" id="cedula"
+                                             title="Cedula" required="true" requiredMessage="La Cédula es un campo obligatorio."
+                                             onkeypress="return validar(event)" 
+                                             /> 
+                                <h:outputLabel value="Nombres:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.nombres}" title="Nombres Persona" required="true" 
+                                             requiredMessage="El Nombre es requerido!" type="text"  onkeypress="return soloLetras(event)"
+                                             validatorMessage="Nombres, No puede ingresar números..." >
+                                    <f:validateRegex pattern="^[A-Za-z,ñ,Ñ, ]+$" />
+                                </p:inputText>
+                                <h:outputLabel value="Apellidos:"/>
+                                <p:inputText  value="#{sessionScope.usLogueado.apellidos}" title="Apellidos Persona" required="true" 
+                                              requiredMessage="Los apellidos son requeridos!" type="text"  onkeypress="return soloLetras(event)"
+                                              validatorMessage="Apellidos, No puede ingresar números..." >
+                                    <f:validateRegex pattern="^[A-Za-z,ñ,Ñ, ]+$" />
+                                </p:inputText>
+                                <h:outputLabel value="Sexo:"/>
+                                <p:selectOneRadio value="#{sessionScope.usLogueado.sexo}" required="true" requiredMessage="El sexo del usuario es obligatorio.">
+                                    <f:selectItem itemLabel="Masculino" itemValue="M" />
+                                    <f:selectItem itemLabel="Femenino" itemValue="F" />                                       
+                                </p:selectOneRadio>
+                                <h:outputLabel value="Celular:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.celular}" title="Celular Persona" required="true" 
+                                             requiredMessage="El Celular es requerido!" maxlength="10" onkeypress="return validar(event)"
+                                             validatorMessage="Celular, Debe ingresar mínimo 10 dígitos." >
+                                    <f:validateLength minimum="10"/>
+                                </p:inputText>
+                                <h:outputLabel value="Dirección Domiciliaria:"/>
+                                <p:inputText  value="#{sessionScope.usLogueado.direccionDom}" title="Dirección Domiciliaria" required="true" 
+                                              requiredMessage="La Dirección es requerida!" >
+
+                                </p:inputText>
+                                <h:outputLabel value="Fecha de Nacimiento:"/>
+                                <p:calendar value="#{sessionScope.usLogueado.fechaNacimiento}" showOn="button" 
+                                            navigator="true"  />
+                                <h:outputLabel value="Estado Civil:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.estadoCivil}" required="true" 
+                                             requiredMessage="El Campo es obligatorio."/>
+                                <h:outputLabel value="R.U.C:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.ruc}" required="true" 
+                                             requiredMessage="El Ruc es obligatorio."/>
+                                <h:outputLabel value="Nick:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.nick}" required="true" 
+                                             requiredMessage="El Nick es obligatorio."/>
+                                <h:outputLabel value="Email:"/>
+                                <p:inputText value="#{sessionScope.usLogueado.mail}" required="true" 
+                                             requiredMessage="El Nick es obligatorio."/>
+
+                            </h:panelGrid>
+                            <p:separator/>
+                            <center>
+                                <p:commandButton value="Aceptar"  action="#{propietarioCtrl.actualizarUsuario()}" update="frmPerfilUsuario:pnlUsuario,frmActualizar"/>
+                                <p:commandButton value="Cancelar" type="button" onclick="PF('dlgActualizar').hide();"/>
+                            </center>
+                        </h:form>
+
+                    </p:dialog>
+        
+        <h:outputStylesheet name="css/nanoscroller.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/animate.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/ripple.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/layout-blue.css" library="ultima-layout" />
+        <h:outputStylesheet name="css/styles.css" library="resources" />
+    </h:body>
+</html>
+
